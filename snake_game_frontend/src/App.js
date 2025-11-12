@@ -1,47 +1,69 @@
-import React, { useState, useEffect } from 'react';
-import logo from './logo.svg';
+/**
+ * App - Snake Game main page
+ * - Renders header, ScoreBar, GameBoard, and Controls
+ * - Applies Ocean Professional theme from styles/theme.css
+ */
+import React from 'react';
 import './App.css';
+import './styles/theme.css';
+import { useSnakeGame } from './hooks/useSnakeGame';
+import GameBoard from './components/GameBoard';
+import ScoreBar from './components/ScoreBar';
+import Controls from './components/Controls';
 
 // PUBLIC_INTERFACE
 function App() {
-  const [theme, setTheme] = useState('light');
-
-  // Effect to apply theme to document element
-  useEffect(() => {
-    document.documentElement.setAttribute('data-theme', theme);
-  }, [theme]);
-
-  // PUBLIC_INTERFACE
-  const toggleTheme = () => {
-    setTheme(prevTheme => prevTheme === 'light' ? 'dark' : 'light');
-  };
+  const {
+    size,
+    running,
+    paused,
+    gameOver,
+    score,
+    best,
+    wrap,
+    snake,
+    food,
+    start,
+    pause,
+    resume,
+    restart,
+    toggleWrap,
+  } = useSnakeGame({ size: 20, speed: 8 });
 
   return (
-    <div className="App">
-      <header className="App-header">
-        <button 
-          className="theme-toggle" 
-          onClick={toggleTheme}
-          aria-label={`Switch to ${theme === 'light' ? 'dark' : 'light'} mode`}
-        >
-          {theme === 'light' ? '🌙 Dark' : '☀️ Light'}
-        </button>
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <p>
-          Current theme: <strong>{theme}</strong>
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div className="app-shell">
+      <div className="card">
+        <div className="header">
+          <h1 className="header-title">Snake</h1>
+          <p className="header-subtitle">Eat the food, grow the snake, avoid collisions. Arrows/WASD to move.</p>
+        </div>
+        <div className="content">
+          <ScoreBar score={score} best={best} />
+          <div className="board-wrapper">
+            <GameBoard
+              size={size}
+              snake={snake}
+              food={food}
+              running={running}
+              paused={paused}
+              gameOver={gameOver}
+            />
+          </div>
+          <div style={{ marginTop: 12 }}>
+            <Controls
+              running={running}
+              paused={paused}
+              gameOver={gameOver}
+              onStart={start}
+              onPause={pause}
+              onResume={resume}
+              onRestart={restart}
+              wrap={wrap}
+              onToggleWrap={toggleWrap}
+            />
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
